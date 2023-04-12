@@ -1,10 +1,12 @@
 # Import packages
 from sklearn.neural_network import MLPClassifier # model chosen
 from sklearn.model_selection import train_test_split 
-from bayes_opt import BayesianOptimization # bysian for alpha 
+#from bayes_opt import BayesianOptimization # bysian for alpha 
 import pandas as pd
 import numpy as np
 import os
+import matplotlib.pyplot as plt
+from sklearn.utils import shuffle
 
 #----------------------LOAD DATA --------------------------
 
@@ -32,8 +34,12 @@ import os
 
 # load dataset and saperate X,y
 sounds = pd.read_csv("sounds.csv")
+
 X = sounds.iloc[:,:-1]
 y = sounds.iloc[:,-1:]
+
+# shuffle the data
+X, y = shuffle(X, y, random_state=42)
 
 # Understand data such as NA valuse and do graphs and data type
 
@@ -58,6 +64,18 @@ print(f'y values before numarically label them {y.iloc[:,0].unique()}')
 y = y.replace({'STANDING': 1, 'SITTING': 2, 'LAYING': 3, 'WALKING': 4, 'WALKING_DOWNSTAIRS':5, 'WALKING_UPSTAIRS':6})
 print(f'y values after labeling {y.iloc[:,0].unique()}')
 
+# graph data
+
+# get the frequency of each activity
+activity_counts = sounds['activity'].value_counts()
+
+# plot the bar chart to check for balanced data
+plt.figure(figsize=(10,5))
+plt.bar(activity_counts.index, activity_counts.values)
+plt.title('Activity Frequency')
+plt.xlabel('Activity')
+plt.ylabel('Frequency')
+plt.show()
 
 #---------------------PREPARE DATA ------------------------
 
@@ -92,9 +110,39 @@ pbounds = {
 # create the BayesianOptimization object and run the optimization
 # there is an issue with the bysian model
 bo = BayesianOptimization(f=objective, pbounds=pbounds)
-bo.maximize(n_iter=10)
+bo.maximize(n_iter=10.)
 
 # print the best hyperparameters and their corresponding score
 print('Best hyperparameters:', bo.max)
 bo.best_params_
+
+from sklearn.model_selection import cross_val_score
+from skopt import BayesSearchCV
+from skopt.space import Real, Integer, Categorical
+
+# Define the hyperparameters search space
+hyperparameters_space = {
+    'hidden_layer_sizes': Integer(50, 300),
+    'activation': Categorical(['relu', 'tanh']),
+    'solver': Categorical(['adam', 'lbfgs']),
+    'alpha': Real(1e-5, 1e-3, prior='log-uniform'),
+    'learning_rate_init': Real(0.0001, 0.1, prior='log-uniform')
+}
+
+# Create the MLP classifier
+mlp = MLPClassifier(random_state=42)
+
+# Create the BayesSearchCV object with cross-validation
+search = BayesSearchCV(mlp, hyperparameters_space, n_iter=50, cv=5, random_state=42)
+
+# Fit the BayesSearchCV object to the training set
+search.fit(X_train, y_train)
+
+# Print the best hyperparameters found
+print(search.best_params_)
+
+# Evaluate the best model
+best_model = search.best_estimator_
+accuracy = cross_val_score(best_model, X, y, cv=5).mean()
+print("Accuracy:", accuracy)
 
