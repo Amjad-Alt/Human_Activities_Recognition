@@ -1,12 +1,25 @@
-# Import packages
-from sklearn.neural_network import MLPClassifier # model chosen
-from sklearn.model_selection import train_test_split 
-#from bayes_opt import BayesianOptimization # bysian for alpha 
+# import packages
 import pandas as pd
 import numpy as np
 import os
+
+# modeling 
+from sklearn.neural_network import MLPClassifier # model chosen
+from sklearn.model_selection import train_test_split 
+#from bayes_opt import BayesianOptimization # bysian for alpha 
+#from sklearn.utils import shuffle
+from sklearn.model_selection import cross_val_score
+from skopt import BayesSearchCV
+from skopt.space import Real, Integer, Categorical
+
+# plotting
 import matplotlib.pyplot as plt
-from sklearn.utils import shuffle
+
+# model evaluation
+from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.metrics import plot_confusion_matrix
+from sklearn.model_selection import learning_curve
+
 
 #----------------------LOAD DATA --------------------------
 
@@ -39,7 +52,7 @@ X = sounds.iloc[:,:-1]
 y = sounds.iloc[:,-1:]
 
 # shuffle the data
-X, y = shuffle(X, y, random_state=42)
+# X, y = shuffle(X, y, random_state=42)
 
 # Understand data such as NA valuse and do graphs and data type
 
@@ -64,12 +77,11 @@ print(f'y values before numarically label them {y.iloc[:,0].unique()}')
 y = y.replace({'STANDING': 1, 'SITTING': 2, 'LAYING': 3, 'WALKING': 4, 'WALKING_DOWNSTAIRS':5, 'WALKING_UPSTAIRS':6})
 print(f'y values after labeling {y.iloc[:,0].unique()}')
 
-# graph data
 
-# get the frequency of each activity
-activity_counts = sounds['activity'].value_counts()
+# get the frequency of each activity to check for balanced data
+activity_counts = sounds['Activity'].value_counts()
 
-# plot the bar chart to check for balanced data
+# plot the bar chart 
 plt.figure(figsize=(10,5))
 plt.bar(activity_counts.index, activity_counts.values)
 plt.title('Activity Frequency')
@@ -77,7 +89,7 @@ plt.xlabel('Activity')
 plt.ylabel('Frequency')
 plt.show()
 
-#---------------------PREPARE DATA ------------------------
+#--------------------- MODELING ------------------------
 
 # split the dataset into training, validation, and testing sets
 # 60-40
@@ -85,40 +97,6 @@ X_train, X_valtest, y_train, y_valtest = train_test_split(X, y, test_size=0.4, r
 # split test 50-50
 X_val, X_test, y_val, y_test = train_test_split(X_valtest, y_valtest, test_size=0.5, random_state=42)
 
-
-# define the objective function to optimize
-def objective(alpha, hidden_layer_sizes, max_iter):
-    # define the MLPClassifier model with the given hyperparameters
-    mlp = MLPClassifier(alpha=alpha, hidden_layer_sizes=hidden_layer_sizes, max_iter=max_iter)
-    
-    # train the model on the training set
-    mlp.fit(X_train, y_train)
-    
-    # evaluate the model on the testing set and return the negative accuracy
-    # negative accuracy used instead of the regular accuracy
-    # because Bayesian optimization aims to maximize objective function,
-    # so we need to use the negative of the accuracy to turn it into a minimization problem.'''
-    return -mlp.score(X_test, y_test)
-
-# define the hyperparameter search space
-pbounds = {
-    'alpha': (0.0001, 1.0),#range of values that can be explored
-    'hidden_layer_sizes': (10, 100),
-    'max_iter': (100, 1000)
-}
-
-# create the BayesianOptimization object and run the optimization
-# there is an issue with the bysian model
-bo = BayesianOptimization(f=objective, pbounds=pbounds)
-bo.maximize(n_iter=10.)
-
-# print the best hyperparameters and their corresponding score
-print('Best hyperparameters:', bo.max)
-bo.best_params_
-
-from sklearn.model_selection import cross_val_score
-from skopt import BayesSearchCV
-from skopt.space import Real, Integer, Categorical
 
 # Define the hyperparameters search space
 hyperparameters_space = {
@@ -141,8 +119,55 @@ search.fit(X_train, y_train)
 # Print the best hyperparameters found
 print(search.best_params_)
 
+# these are the best hyper parameter
+# OrderedDict([('activation', 'tanh'), ('alpha', 0.001), ('hidden_layer_sizes', 50), ('learning_rate_init', 0.0012222687915984045), ('solver', 'adam')])
+
 # Evaluate the best model
 best_model = search.best_estimator_
-accuracy = cross_val_score(best_model, X, y, cv=5).mean()
+accuracy = cross_val_score(best_model, X_valtest, y_valtest, cv=5).mean()
 print("Accuracy:", accuracy)
+
+# -------------------------- Evaluation -------------------------
+
+# Predict the classes of the validation set
+y_pred = best_model.predict(X_val)
+
+# Calculate the confusion matrix of validation set
+cm = confusion_matrix(y_val, y_pred)
+print("Confusion Matrix:")
+print(cm)
+
+# Calculate precision, recall, and f1-score
+print(classification_report(y_val, y_pred))
+
+plot_confusion_matrix(best_model, X_val, y_val)
+plt.title("Confusion Matrix")
+plt.show()
+
+
+# Define the range of sample sizes to plot
+train_sizes = [0.1, 0.2, 0.4, 0.6, 0.8, 1.0]
+
+# Calculate the learning curve scores for both training and validation sets
+train_sizes, train_scores, val_scores = learning_curve(best_model, X_train, y_train, train_sizes=train_sizes, cv=5)
+
+# Calculate the mean and standard deviation of the training scores and validation scores
+train_mean = np.mean(train_scores, axis=1)
+train_std = np.std(train_scores, axis=1)
+val_mean = np.mean(val_scores, axis=1)
+val_std = np.std(val_scores, axis=1)
+
+# Plot the learning curve
+plt.figure(figsize=(10, 6))
+plt.plot(train_sizes, train_mean, label='Training score')
+plt.plot(train_sizes, val_mean, label='Cross-validation score')
+plt.fill_between(train_sizes, train_mean - train_std, train_mean + train_std, alpha=0.1)
+plt.fill_between(train_sizes, val_mean - val_std, val_mean + val_std, alpha=0.1)
+plt.xlabel('Number of training examples')
+plt.ylabel('Accuracy score')
+plt.legend(loc='best')
+plt.title('Learning Curve')
+plt.show()
+
+
 
