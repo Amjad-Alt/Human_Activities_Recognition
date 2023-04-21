@@ -50,8 +50,8 @@ np.random.seed(42)
 # load dataset and saperate X,y
 sounds = pd.read_csv("sounds.csv")
 
-X = sounds.iloc[:,:-1]
-y = sounds.iloc[:,-1:]
+#X = sounds.iloc[:,:-1]
+#y = sounds.iloc[:,-1:]
 
 # shuffle the data
 # X, y = shuffle(X, y, random_state=42)
@@ -60,25 +60,21 @@ y = sounds.iloc[:,-1:]
 
 # data shapes
 print(f'whole dataset schema {sounds.shape}')
-print(f'whole dataset schema {X.shape}')
-print(f'whole dataset schema {y.shape}')
+#print(f'whole dataset schema {X.shape}')
+#print(f'whole dataset schema {y.shape}')
 
 # check Na values
 print(f'number of Na in the whole dataframe {sounds.isna().sum().sum()}')
 
 # data head
-print(X.head(3))
-print(y.head(3))
+print(sounds.head(3))
+#print(X.head(3))
+#print(y.head(3))
 
 # check features types
-print(f'{X.dtypes}')
-print(f'{y.dtypes}')
-
-# change y into numarical
-print(f'y values before numarically label them {y.iloc[:,0].unique()}')
-y = y.replace({'STANDING': 1, 'SITTING': 2, 'LAYING': 3, 'WALKING': 4, 'WALKING_DOWNSTAIRS':5, 'WALKING_UPSTAIRS':6})
-print(f'y values after labeling {y.iloc[:,0].unique()}')
-
+print(f'{sounds.dtypes}')
+#print(f'{X.dtypes}')
+#print(f'{y.dtypes}')
 
 # get the frequency of each activity to check for balanced data
 activity_counts = sounds['Activity'].value_counts()
@@ -90,6 +86,22 @@ plt.title('Activity Frequency')
 plt.xlabel('Activity')
 plt.ylabel('Frequency')
 plt.show()
+
+# make a copy of the main dataset 
+sounds2 = sounds.copy()
+
+# change y into numarical
+print(f'Activities before numarically label them {sounds2.iloc[:,0].unique()}')
+y = sounds2.replace({'STANDING': 1, 'SITTING': 2, 'LAYING': 3, 'WALKING': 4, 'WALKING_DOWNSTAIRS':5, 'WALKING_UPSTAIRS':6})
+print(f'Activities values after labeling {sounds2.iloc[:,0].unique()}')
+
+
+# detect outliers by clustering 
+from sklearn.cluster import DBSCAN 
+
+# Fit DBSCAN
+dbscan = DBSCAN(eps=0.3, min_samples=5)
+dbscan.fit(sounds2)
 
 #--------------------- MODELING ------------------------
 
