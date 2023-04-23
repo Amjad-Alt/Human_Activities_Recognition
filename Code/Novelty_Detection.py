@@ -2,18 +2,14 @@
 import pandas as pd
 
 # model
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import OneClassSVM
-
-# validation
-from sklearn.metrics import confusion_matrix, classification_report
 
 # plot
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# ==================================== Join raw data of single use ============================
+# =========================== Join raw data of single user ============================
 
 # Define the directory where the files are stored
 data_dir = "C:/Users/amjad/OneDrive/المستندات/GWU_Cources/Spring2023/Machine_Learning/MLproject/Code/HAPT_Data_Set/RawData"
@@ -38,7 +34,7 @@ for user in range(1, 31):
     # Save the joined data to a file for this user
     data_h.to_csv(f"{save_dir}/user01_data.csv", index=False)
 
-# =================================== One-class SVM User1==================================
+# =============================== One-class SVM User1==================================
 
 # Load the dataset
 data = pd.read_csv('user01_data.csv')
@@ -66,7 +62,7 @@ predictions = model.predict(test_data_scaled)
 anomalies = test_data[predictions < 0]
 
 
-#========================= plot model result ===========================
+#======================== plot model result ===========================
 # need to fix the y axies
 # Plot the predictions and anomalies
 palette = sns.color_palette("husl", 3)
@@ -94,7 +90,7 @@ ax3.set_ylim(-8, 5)
 fig.suptitle('One-Class SVM Results User1', fontsize=14, fontweight='bold')
 plt.show()
 
-# ===================================== Evaluate =======================
+# ============================ Evaluate =======================
 
 # Evaluate the model
 precision = len(anomalies) / len(test_data)
@@ -107,8 +103,7 @@ print(f"Recall: {recall}")
 print(f"F1 Score: {f1_score}")
 
 
-
-# =================================== One-class SVM User2==================================
+# ======================== One-class SVM User2 ==================================
 
 # Load the dataset
 data2 = pd.read_csv('user02_data.csv')
@@ -158,7 +153,7 @@ ax3.set_ylim(-7, 6)
 fig.suptitle('One-Class SVM Results User2', fontsize=14, fontweight='bold')
 plt.show()
 
-# ===================================== Evaluate =======================
+# ============================ Evaluate =======================
 
 # Evaluate the model
 precision2 = len(anomalies2) / len(test_data2)
