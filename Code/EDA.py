@@ -152,3 +152,10 @@ plt.xlim(-5, 35)
 plt.ylim(-5, 35)
 plt.title(f"Estimated number of clusters: {num_clusters}")
 plt.show()
+
+# extract outliers from the data 
+outlier_indices = np.where(labels == -1)[0]
+outliers = sounds2.iloc[outlier_indices]
+
+# filter out the outliers from the dataset 
+sounds3 = sounds2[labels != -1]
