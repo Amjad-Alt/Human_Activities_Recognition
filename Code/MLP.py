@@ -21,28 +21,7 @@ from sklearn.metrics import plot_confusion_matrix
 from sklearn.model_selection import learning_curve
 
 
-#----------------------LOAD DATA --------------------------
-
-# Set the working directory to the directory containing the datasets
-#os.chdir("C:/Users/amjad/OneDrive/المستندات/GWU_Cources/Spring2023/Machine_Learning/MLproject/Code")
-
-# Create an empty list to store the dataframes
-#df_list = []
-
-# Loop through the files in the directory
-#for file in os.listdir():
-    # Check if the file is a CSV file
-    #if file.endswith(".csv"):
-        # Read the CSV file into a pandas dataframe
-       #df = pd.read_csv(file)
-        # Append the dataframe to the list
-        #df_list.append(df)
-
-# Concatenate the dataframes in the list
-# concatenated_df = pd.concat(df_list, axis=0)
-
-# save it as one file
-# concatenated_df.to_csv("sounds.csv", index=False)
+#=========================== LOAD DATA =========================
 
 # set seed
 np.random.seed(42)
@@ -50,72 +29,45 @@ np.random.seed(42)
 # load dataset and saperate X,y
 sounds = pd.read_csv("sounds.csv")
 
-#X = sounds.iloc[:,:-1]
-#y = sounds.iloc[:,-1:]
-
-# shuffle the data
-# X, y = shuffle(X, y, random_state=42)
+X = sounds.iloc[:,:-1]
+y = sounds.iloc[:,-1:]
 
 # Understand data such as NA valuse and do graphs and data type
 
-# data shapes
-print(f'whole dataset schema {sounds.shape}')
-#print(f'whole dataset schema {X.shape}')
-#print(f'whole dataset schema {y.shape}')
+# X,y shapes
+print(f'X schema {X.shape}')
+print(f'y schema {y.shape}')
 
-# check Na values
-print(f'number of Na in the whole dataframe {sounds.isna().sum().sum()}')
-
-# data head
-print(sounds.head(3))
-#print(X.head(3))
-#print(y.head(3))
+# X,y head
+print(X.head(3))
+print(y.head(3))
 
 # check features types
-print(f'{sounds.dtypes}')
-#print(f'{X.dtypes}')
-#print(f'{y.dtypes}')
-
-# get the frequency of each activity to check for balanced data
-activity_counts = sounds['Activity'].value_counts()
-
-# plot the bar chart 
-plt.figure(figsize=(10,5))
-plt.bar(activity_counts.index, activity_counts.values)
-plt.title('Activity Frequency')
-plt.xlabel('Activity')
-plt.ylabel('Frequency')
-plt.show()
+print(f'{X.dtypes}')
+print(f'{y.dtypes}')
 
 # make a copy of the main dataset 
 sounds2 = sounds.copy()
 
-# change y into numarical
+# change y into numarical for the model
 print(f'Activities before numarically label them {sounds2.iloc[:,0].unique()}')
 y = sounds2.replace({'STANDING': 1, 'SITTING': 2, 'LAYING': 3, 'WALKING': 4, 'WALKING_DOWNSTAIRS':5, 'WALKING_UPSTAIRS':6})
 print(f'Activities values after labeling {sounds2.iloc[:,0].unique()}')
 
-
-# detect outliers by clustering 
-from sklearn.cluster import DBSCAN 
-
-# Fit DBSCAN
-dbscan = DBSCAN(eps=0.3, min_samples=5)
-dbscan.fit(sounds2)
-
-#--------------------- MODELING ------------------------
+#============================== Modeling ==========================
 
 # split dataset into training, testing sets 60-40
 X_train, X_valtest, y_train, y_valtest = train_test_split(X, y, test_size=0.4, random_state=42)
 
 # Define the hyperparameters search space
 hyperparameters_space = {
-    'hidden_layer_sizes': Integer(50, 300),
+    'hidden_layer_sizes': Integer(10, 100),
     'activation': Categorical(['relu', 'tanh']),
     'solver': Categorical(['adam', 'lbfgs']),
     'alpha': Real(1e-5, 1e-3, prior='log-uniform'),
     'learning_rate_init': Real(0.0001, 0.1, prior='log-uniform')
     }
+
 # hidden_layer_sizes: the number of neurons in each hidden layer.
 # activation: the activation function for the hidden layer neurons.
 # solver: the optimization algorithm used to find the weights and biases of the neural network.
@@ -141,7 +93,8 @@ search.fit(X_train, y_train)
 print(search.best_params_)
 # OrderedDict([('activation', 'tanh'), ('alpha', 0.001), ('hidden_layer_sizes', 50), ('learning_rate_init', 0.0012222687915984045), ('solver', 'adam')])
 print(search.best_score_)
-# -------------------------- Evaluation -------------------------
+
+# ============================== Evaluation =========================
 # accurcy
 best_model = search.best_estimator_
 accuracy = cross_val_score(best_model, X_valtest, y_valtest, cv=5).mean()
