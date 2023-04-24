@@ -27,7 +27,7 @@ from sklearn.model_selection import learning_curve
 np.random.seed(42)
 
 # load dataset and saperate X,y
-sounds = pd.read_csv("sounds.csv")
+sounds = pd.read_csv("data/sounds.csv")
 
 X = sounds.iloc[:,:-1]
 y = sounds.iloc[:,-1:]
