@@ -5,7 +5,7 @@ import os
 
 # plotting
 import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
+import seaborn as sns
 
 # clustering
 from collections import Counter
@@ -15,7 +15,7 @@ from sklearn.cluster import DBSCAN
 #============================== Joining datasets =================================
 
 # Set the working directory to the directory containing the datasets
-os.chdir("C:/Users/amjad/OneDrive/المستندات/GWU_Cources/Spring2023/Machine_Learning/MLproject/Code")
+os.chdir("C:/Users/amjad/OneDrive/المستندات/GWU_Cources/Spring2023/Machine_Learning/MLproject/Code/data")
 
 # Create an empty list to store the dataframes
 df_list = []
@@ -35,13 +35,38 @@ concatenated_df = pd.concat(df_list, axis=0)
 # save it as one file
 concatenated_df.to_csv("sounds.csv", index=False)
 
+# ================== Join raw data of single user ============================
+
+# Define the directory where the files are stored
+data_dir = "C:/Users/amjad/OneDrive/المستندات/GWU_Cources/Spring2023/Machine_Learning/MLproject/Code/data/HAPT_Data_Set/RawData"
+save_dir = "C:/Users/amjad/OneDrive/المستندات/GWU_Cources/Spring2023/Machine_Learning/MLproject/Code/data"
+# Loop users
+for user in range(1, 31):
+    
+    # Define the filenames for this user's accelerometer and gyroscope data
+    acc_filenames = [f"{data_dir}/acc_exp02_user01.txt", f"{data_dir}/acc_exp02_user01.txt"]
+    gyro_filenames = [f"{data_dir}/gyro_exp01_user01.txt", f"{data_dir}/gyro_exp02_user01.txt"]
+    
+    # Read in the accelerometer and gyroscope data for this user
+    acc_data = pd.concat([pd.read_csv(f, header=None, sep=" ") for f in acc_filenames])
+    gyro_data = pd.concat([pd.read_csv(f, header=None, sep=" ") for f in gyro_filenames])
+    
+    # Join the accelerometer and gyroscope data horizontally
+    data_h = pd.concat([acc_data, gyro_data], axis=1)
+
+    # Add column names
+    data_h.columns = ['acc_x', 'acc_y', 'acc_z', 'gyro_x', 'gyro_y', 'gyro_z']
+    
+    # Save the joined data to a file for this user
+    data_h.to_csv(f"{save_dir}/user01_data.csv", index=False)
+
 
 # =============================== Simple EDA ====================================
 # set seed
 np.random.seed(42)
 
 # load dataset and saperate X,y
-sounds = pd.read_csv("sounds.csv")
+sounds = pd.read_csv("data/sounds.csv")
 
 # data shapes
 print(f'whole dataset schema {sounds.shape}')
@@ -74,6 +99,39 @@ print(f'Activities before numarically label them {sounds2.iloc[:,-1].unique()}')
 sounds2['Activity'] = sounds2['Activity'].replace({'STANDING': 1, 'SITTING': 2, 'LAYING': 3, 'WALKING': 4, 'WALKING_DOWNSTAIRS':5, 'WALKING_UPSTAIRS':6})
 print(f'Activities values after labeling {sounds2.iloc[:,-1].unique()}')
 
+
+#=============================== Plot sounds ===========================
+
+data = pd.read_csv('data/user01_data.csv')
+
+palette = sns.color_palette("husl", 6)
+
+# Create figure and axes objects
+fig, (ax1, ax2, ax3, ax4, ax5, ax6) = plt.subplots(6, 1, figsize=(10, 15))
+
+# Plot 
+ax1.plot(data.iloc[:,0], data.iloc[:,0], color=palette[0])
+#ax1.set_title('')
+
+ax2.plot(data.iloc[:,1].index, data.iloc[:,1], color=palette[1])
+#ax2.set_title('')
+
+# Plot anomalies
+ax3.plot(data.iloc[:,2].index, data.iloc[:,2], color=palette[2])
+#ax3.set_title('')
+
+ax4.plot(data.iloc[:,3].index,data.iloc[:,3], color=palette[3])
+#ax4.set_title('')
+
+ax5.plot(data.iloc[:,4].index, data.iloc[:,4], color=palette[4])
+#ax5.set_title('')
+
+ax6.plot(data.iloc[:,5].index, data.iloc[:,5], color=palette[5])
+#ax6.set_title('')
+
+# Add figure title and legend
+fig.suptitle('', fontsize=14, fontweight='bold')
+plt.show()
 
 #=============================== Detect outliers ==================================
 # Fit DBSCAN to the data
