@@ -1,47 +1,6 @@
 
-# import packages
-import pandas as pd
-import numpy as np
-
-# plotting
-import matplotlib.pyplot as plt
-from pylab import pcolor, colorbar, plot
-from minisom import MiniSom
-
-# model
-from sklearn_lvq import GlvqModel
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import RandomizedSearchCV
-#from skopt.space import Real, Integer, Categorical
-
-# evaluation
-#from sklearn.metrics import accuracy_score
-from sklearn.metrics import confusion_matrix, classification_report
-from sklearn.metrics import plot_confusion_matrix
-from sklearn.model_selection import learning_curve
-
-# --------------------------- PREPARE DATA ----------------------------
-
-# set seed
-np.random.seed(42) 
-
-# load dataset and saperate X,y
-sounds = pd.read_csv("sounds.csv", skiprows=[0], header=None)
-
-X = sounds.iloc[:,:-1]
-y = sounds.iloc[:,-1:]
-
-# change y into numarical
-print(f'y values before numarically label them {y.iloc[:,0].unique()}')
-y = y.replace({'STANDING': 1, 'SITTING': 2, 'LAYING': 3, 'WALKING': 4, 'WALKING_DOWNSTAIRS':5, 'WALKING_UPSTAIRS':6})
-print(f'y values after labeling {y.iloc[:,0].unique()}')
-
-# ----------------------------- MODELING ------------------------------
+# ============================= MODELING ================================
 # split dataset into training, testing sets 60-40
-
-X_train, X_valtest, y_train, y_valtest = train_test_split(X, y, test_size=0.4, random_state=42)
-
 
 # define parameter distributions for random search
 param_dist = {'prototypes_per_class': range(1, 11),
@@ -71,16 +30,19 @@ random_search.fit(X_train, y_train.values.ravel())
 # print best parameters and corresponding score
 print(f'Best score: {random_search.best_score_}')
 # Best score: 0.9721638300381275
+# with reducing features Best score: 0.8297458171193479
 print(f'Best parameters:{random_search.best_params_}')
 # Best parameters:{'random_state': 8, 'prototypes_per_class': 7, 'beta': 75}
+# with reducing features Best parameters:{'random_state': 8, 'prototypes_per_class': 7, 'beta': 75}
 
-#----------------------------- EVALUATION ----------------------------
+#============================= Evaluation ===========================
 
 # accurcy
 best_model = random_search.best_estimator_
 accuracy = cross_val_score(best_model, X_valtest, y_valtest, cv=5).mean()
 print("Accuracy:", accuracy)
 # Accuracy: 0.9769417475728155
+# with feature reduction Accuracy: 0.8208737864077669
 
 # confusion matrix
 # predict the classes of the test set
