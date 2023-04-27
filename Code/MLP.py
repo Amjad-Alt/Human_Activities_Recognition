@@ -1,25 +1,3 @@
-# import packages
-import pandas as pd
-import numpy as np
-import os
-
-# modeling 
-from sklearn.neural_network import MLPClassifier # model chosen
-from sklearn.model_selection import train_test_split 
-#from bayes_opt import BayesianOptimization # bysian for alpha 
-#from sklearn.utils import shuffle
-from sklearn.model_selection import cross_val_score
-from skopt import BayesSearchCV
-from skopt.space import Real, Integer, Categorical
-
-# plotting
-import matplotlib.pyplot as plt
-
-# model evaluation
-from sklearn.metrics import confusion_matrix, classification_report
-from sklearn.metrics import plot_confusion_matrix
-from sklearn.model_selection import learning_curve
-
 
 #=========================== LOAD DATA =========================
 
@@ -27,12 +5,8 @@ from sklearn.model_selection import learning_curve
 np.random.seed(42)
 
 # load dataset and saperate X,y
-sounds = pd.read_csv("data/sounds.csv")
-
-X = sounds.iloc[:,:-1]
-y = sounds.iloc[:,-1:]
-
-# Understand data such as NA valuse and do graphs and data type
+X = sounds2.drop('Activity', axis=1)
+y = sounds2['Activity']
 
 # X,y shapes
 print(f'X schema {X.shape}')
@@ -46,13 +20,29 @@ print(y.head(3))
 print(f'{X.dtypes}')
 print(f'{y.dtypes}')
 
-# make a copy of the main dataset 
-sounds2 = sounds.copy()
+#============================== Feature Reduction =======================
 
-# change y into numarical for the model
-print(f'Activities before numarically label them {sounds2.iloc[:,0].unique()}')
-y = sounds2.replace({'STANDING': 1, 'SITTING': 2, 'LAYING': 3, 'WALKING': 4, 'WALKING_DOWNSTAIRS':5, 'WALKING_UPSTAIRS':6})
-print(f'Activities values after labeling {sounds2.iloc[:,0].unique()}')
+########################## it is not going to be used #################
+# The reason is:
+# by using all features we got higher accuracy by more % than %15 
+# so we are sacrificing computational resources for better accuracy
+
+# Instantiate PCA with number of components
+pca = PCA(n_components=5)
+
+# Fit and transform the data using PCA
+X_reduced = pca.fit_transform(X)
+
+# Print the explained variance ratio of each component
+print(pca.explained_variance_ratio_)
+
+# Plot the explained variance ratio
+plt.plot(range(1,6), pca.explained_variance_ratio_, 'o-')
+plt.xlabel('Principal Component')
+plt.ylabel('Explained Variance Ratio')
+plt.title('Explained Variance Ratio per Principal Component')
+plt.show()
+
 
 #============================== Modeling ==========================
 
@@ -61,7 +51,7 @@ X_train, X_valtest, y_train, y_valtest = train_test_split(X, y, test_size=0.4, r
 
 # Define the hyperparameters search space
 hyperparameters_space = {
-    'hidden_layer_sizes': Integer(10, 100),
+    'hidden_layer_sizes': Integer(10, 200),
     'activation': Categorical(['relu', 'tanh']),
     'solver': Categorical(['adam', 'lbfgs']),
     'alpha': Real(1e-5, 1e-3, prior='log-uniform'),
@@ -91,15 +81,19 @@ search.fit(X_train, y_train)
 
 # Print the best hyperparameters found
 print(search.best_params_)
-# OrderedDict([('activation', 'tanh'), ('alpha', 0.001), ('hidden_layer_sizes', 50), ('learning_rate_init', 0.0012222687915984045), ('solver', 'adam')])
+# OrderedDict([('activation', 'tanh'), ('alpha', 1.505737910157384e-05), ('hidden_layer_sizes', 72), ('learning_rate_init', 0.007656584299243426), ('solver', 'adam')])
 print(search.best_score_)
+# 0.8519185566605086
 
 # ============================== Evaluation =========================
 # accurcy
 best_model = search.best_estimator_
 accuracy = cross_val_score(best_model, X_valtest, y_valtest, cv=5).mean()
 print("Accuracy:", accuracy)
+# with all features
 # Accuracy: 0.9781553398058251
+# feature reduction
+# Accuracy: 0.8274271844660195
 
 # confusion matrix
 # predict classes of the test set
