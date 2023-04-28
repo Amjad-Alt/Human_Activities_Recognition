@@ -18,7 +18,6 @@ from sklearn.cluster import DBSCAN
 # modeling 
 from sklearn.neural_network import MLPClassifier # model chosen
 from sklearn.model_selection import train_test_split 
-#from bayes_opt import BayesianOptimization # bysian for alpha 
 from sklearn.model_selection import cross_val_score
 from skopt import BayesSearchCV
 from skopt.space import Real, Integer, Categorical
