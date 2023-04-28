@@ -83,38 +83,14 @@ ax6.set_title('gyroscope Z')
 # Add figure title and legend
 fig.suptitle('Subject2 Activity Gyroscope|Accelerometer', fontsize=14, fontweight='bold')
 plt.show()
-# ============================== Carrolation Matrix==========================
-
-# carrolation best features
-corr_matrix = sounds2.corr().abs()
-# Select upper triangle of correlation matrix
-upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(np.bool))
-# Get the top 10 features with the highest correlation
-top10 = corr_matrix.nlargest(10, 'Activity')['Activity'].index
-# Find index of feature columns with correlation greater than 0.8
-to_drop = [column for column in upper.columns if any(upper[column] > 0.9)]
-# Drop highly correlated features
-top10 = sounds2.drop(sounds2[to_drop], axis=1, inplace=True)
-
-# most carrolated columns to the target `Activity`
-# Index(['Activity', 'fBodyAcc-entropy()-X', 'tBodyAcc-sma()',
-#       'fBodyAccJerk-entropy()-X', 'tBodyAccMag-mean()', 'tBodyAccMag-sma()',
-#       'tGravityAccMag-mean()', 'tGravityAccMag-sma()',
-#       'tBodyAccJerk-entropy()-X', 'tBodyGyro-sma()'],
-#      dtype='object')
-
-
-# Plot heatmap of the correlation matrix
-sns.heatmap(corr_matrix, cmap='coolwarm')
-plt.title('Correlation Matrix of Sound Recognition', fontsize=16)
-plt.show()
-
 
 #=============================== Detect outliers ==================================
 
 # Fit DBSCAN to the data
 clustering = DBSCAN(eps=5, min_samples=2).fit(sounds2)
 labels = clustering.labels_
+# `eps` specifies maximum distance between two points in the same neighborhood
+# `min_samples` specifies minimum number of points required to form a dense region
 
 
 # Count the number of occurrences of each label
@@ -156,14 +132,16 @@ for k, col in zip(unique_labels, colors):
         markersize=14,
         alpha=0.5,
     )
-plt.xlim(-5, 35)
-plt.ylim(-5, 35)
+plt.xlim(-2, 10)
+plt.ylim(-2, 10)
 plt.title(f"Estimated number of clusters: {num_clusters}")
 plt.show()
+
 
 # extract outliers from the data 
 outlier_indices = np.where(labels == -1)[0]
 outliers = sounds2.iloc[outlier_indices]
+# only 149 rows are considered outliers from above clustering
 
 # filter out the outliers from the dataset 
 sounds3 = sounds2[labels != -1]
