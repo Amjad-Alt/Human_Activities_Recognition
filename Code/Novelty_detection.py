@@ -1,22 +1,16 @@
 
-
-# Scale the data
-scaler = StandardScaler()
-train_data_scaled = scaler.fit_transform(X_train)
-test_data_scaled = scaler.transform(X_valtest)
-
 # Train the model
 model = OneClassSVM(nu=0.1)
 # nu hyperparameter controls proportion of data that is considered anomalous
 #0.1 means that 10% of the data is considered anomalous.
 
-model.fit(train_data_scaled)
+model.fit(X_train)
 
 # Predict anomalies on the testing set
-predictions = model.predict(test_data_scaled)
+predictions = model.predict(X_test)
 
 # Convert the labels to binary (1: normal, -1: anomalous)
-y_test_binary = np.where(y_valtest == 'normal', 1, -1)
+y_test_binary = np.where(y_test == 'normal', 1, -1)
 predictions_binary = np.where(predictions == 1, 1, -1)
 
 # Compute confusion matrix
@@ -35,7 +29,7 @@ print('Accuracy:', accuracy)
 
 
 # Get the decision function output for test set
-y_score = model.decision_function(X_valtest)
+y_score = model.decision_function(X_test)
 # Compute the ROC curve and ROC area for each class
 fpr, tpr, _ = roc_curve(predictions_binary, y_score)
 roc_auc = auc(fpr, tpr)
@@ -58,4 +52,5 @@ plt.show()
 to identify any anomalies in the test data, resulting in 
 a high number of false positives and a low accuracy. 
 This may be because there were no anomalies in the 
-test set and all subjects are healthy!'''
+test set and all subjects are producing the same result, which means 
+they are healthy, with no injury, no obesity!'''
