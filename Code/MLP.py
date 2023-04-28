@@ -20,30 +20,6 @@ print(y.head(3))
 print(f'{X.dtypes}')
 print(f'{y.dtypes}')
 
-#============================== Feature Reduction =======================
-
-########################## it is not going to be used #################
-# The reason is:
-# by using all features we got higher accuracy by more % than %15 
-# so we are sacrificing computational resources for better accuracy
-
-# Instantiate PCA with number of components
-pca = PCA(n_components=5)
-
-# Fit and transform the data using PCA
-X_reduced = pca.fit_transform(X)
-
-# Print the explained variance ratio of each component
-print(pca.explained_variance_ratio_)
-
-# Plot the explained variance ratio
-plt.plot(range(1,6), pca.explained_variance_ratio_, 'o-')
-plt.xlabel('Principal Component')
-plt.ylabel('Explained Variance Ratio')
-plt.title('Explained Variance Ratio per Principal Component')
-plt.show()
-
-
 #============================== Modeling ==========================
 
 # split dataset into training, testing sets 60-40
