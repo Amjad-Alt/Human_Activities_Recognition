@@ -51,7 +51,7 @@ X_train, X_valtest, y_train, y_valtest = train_test_split(X, y, test_size=0.4, r
 
 # Define the hyperparameters search space
 hyperparameters_space = {
-    'hidden_layer_sizes': Integer(10, 200),
+    'hidden_layer_sizes': Integer(1, 200),
     'activation': Categorical(['relu', 'tanh']),
     'solver': Categorical(['adam', 'lbfgs']),
     'alpha': Real(1e-5, 1e-3, prior='log-uniform'),
@@ -82,32 +82,38 @@ search.fit(X_train, y_train)
 # Print the best hyperparameters found
 print(search.best_params_)
 # OrderedDict([('activation', 'tanh'), ('alpha', 1.505737910157384e-05), ('hidden_layer_sizes', 72), ('learning_rate_init', 0.007656584299243426), ('solver', 'adam')])
+# OrderedDict([('activation', 'relu'), ('alpha', 2.132241999494801e-05), ('hidden_layer_sizes', 10), ('learning_rate_init', 0.0006871268023692144), ('solver', 'lbfgs')])
+### OrderedDict([('activation', 'relu'), ('alpha', 0.001), ('hidden_layer_sizes', 19), ('learning_rate_init', 0.1), ('solver', 'lbfgs')])
 print(search.best_score_)
-# 0.8519185566605086
+# 0.9781553398058251 without PCA
+### 0.9992716236051425 with Anne PCA
+# 0.8519185566605086 with my PCA
 
 # ============================== Evaluation =========================
 # accurcy
 best_model = search.best_estimator_
-accuracy = cross_val_score(best_model, X_valtest, y_valtest, cv=5).mean()
+accuracy = cross_val_score(best_model, X_test, y_test, cv=5).mean()
 print("Accuracy:", accuracy)
 # with all features
 # Accuracy: 0.9781553398058251
-# feature reduction
+# My feature reduction
 # Accuracy: 0.8274271844660195
+# Anne feature reduction
+# Accuracy: 0.9737864077669902
 
 # confusion matrix
 # predict classes of the test set
-y_pred = best_model.predict(X_valtest) 
+y_pred = best_model.predict(X_test) 
 
 # Calculate confusion matrix of test
-cm = confusion_matrix(y_valtest, y_pred) 
+cm = confusion_matrix(y_test, y_pred) 
 print("Confusion Matrix:")
 print(cm)
 
 # Calculate precision, recall, and f1-score
-print(classification_report(y_valtest, y_pred)) 
+print(classification_report(y_test, y_pred)) 
 
-plot_confusion_matrix(best_model, X_valtest, y_valtest) 
+plot_confusion_matrix(best_model, X_test, y_test) 
 plt.title("Confusion Matrix")
 plt.show()
 
