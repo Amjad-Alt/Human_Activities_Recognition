@@ -10,9 +10,9 @@
 ### Data
 This file has:
 
-1.`HAPT_Data_Set`: original dataset used in this project that is obtained from [UCI Human Activity Recognition with Smartphones dataset](http://archive.ics.uci.edu/ml/datasets/Smartphone-Based+Recognition+of+Human+Activities+and+Postural+Transitions). 
-2.`sounds.csv`: Joined `test.csv` and `train.csv` datasets from the original dataset files
-3.`user01_data.csv` joined datasts of one subject from the original dataset file
-4.`user02_data.csv` joined datasts of one subject from the original dataset file
+1. `HAPT_Data_Set`: original dataset used in this project that is obtained from [UCI Human Activity Recognition with Smartphones dataset](http://archive.ics.uci.edu/ml/datasets/Smartphone-Based+Recognition+of+Human+Activities+and+Postural+Transitions). 
+2. `sounds.csv`: Joined `test.csv` and `train.csv` datasets from the original dataset files
+3. `user01_data.csv` joined datasts of one subject from the original dataset file
+4. `user02_data.csv` joined datasts of one subject from the original dataset file
 
 
