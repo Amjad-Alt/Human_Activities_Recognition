@@ -15,7 +15,7 @@ This file has:
 3. `user01_data.csv` joined datasts of one subject from the original dataset file
 4. `user02_data.csv` joined datasts of one subject from the original dataset file
 
-### Pictures
+### Pictures:
 graphs of the study
 
 
