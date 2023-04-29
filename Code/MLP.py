@@ -23,7 +23,7 @@ print(f'{y.dtypes}')
 #============================== Modeling ==========================
 
 # split dataset into training, testing sets 60-40
-X_train, X_valtest, y_train, y_valtest = train_test_split(X, y, test_size=0.4, random_state=42)
+#X_train, X_valtest, y_train, y_valtest = train_test_split(X, y, test_size=0.4, random_state=42)
 
 # Define the hyperparameters search space
 hyperparameters_space = {
