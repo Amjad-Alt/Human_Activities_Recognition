@@ -6,7 +6,7 @@ Smartphone-based human activity recognition is an emerging field of study that h
 ## Result
 
 ## Repo content
-- Group Proposal: PDF. file of projet statement and plan
-- Final-Group-Presentation: PTT. file of project presentation
-- Code: Py. files of codes used including CSV. data fils and graphs
-- Individual-Final-Report: has each contributors Python codes and personal work report
+- *Group Proposal:* PDF. file of projet statement and plan
+- *Final-Group-Presentation:* PTT. file of project presentation
+- *Code:* Py. files of codes used including CSV. data fils and graphs
+- *Individual-Final-Report:* has each contributors Python codes and personal work report
