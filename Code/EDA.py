@@ -41,14 +41,14 @@ sounds2['Activity'] = sounds2['Activity'].map({'STANDING': 1, 'SITTING': 2, 'LAY
 
 data = pd.read_csv('data/user01_data.csv')
 
-palette = sns.color_palette("husl", 6)
+palette = sns.color_palette("Set2", 6)
 
 # Create figure and axes objects
-fig, (ax1, ax2, ax3, ax4, ax5, ax6) = plt.subplots(6, 1, figsize=(10, 15))
+fig, (ax1, ax2, ax3, ax4, ax5, ax6) = plt.subplots(6, 1, figsize=(10, 20))
 
 # Plot 
 ax1.plot(data.iloc[:,0], data.iloc[:,0], color=palette[0])
-#ax1.set_title('accelerometer X')
+ax1.set_title('accelerometer X')
 ax2.plot(data.iloc[:,1].index, data.iloc[:,1], color=palette[1])
 ax2.set_title('accelerometer Y')
 ax3.plot(data.iloc[:,2].index, data.iloc[:,2], color=palette[2])
@@ -61,14 +61,17 @@ ax6.plot(data.iloc[:,5].index, data.iloc[:,5], color=palette[5])
 ax6.set_title('gyroscope Z')
 
 # Add figure title and legend
-fig.suptitle('Subjcet1 Activity Gyroscope|Accelerometer', fontsize=14, fontweight='bold')
+fig.suptitle('Subjcet1 Gyroscope|Accelerometer', fontsize=14, fontweight='bold')
 plt.show()
+
 
 data2 = pd.read_csv('data/user02_data.csv')
 
+fig, (ax1, ax2, ax3, ax4, ax5, ax6) = plt.subplots(6, 1, figsize=(10, 20))
+
 # Plot 
 ax1.plot(data2.iloc[:,0], data2.iloc[:,0], color=palette[0])
-#ax1.set_title('accelerometer X')
+ax1.set_title('accelerometer X')
 ax2.plot(data2.iloc[:,1].index, data2.iloc[:,1], color=palette[1])
 ax2.set_title('accelerometer Y')
 ax3.plot(data2.iloc[:,2].index, data2.iloc[:,2], color=palette[2])
@@ -81,7 +84,7 @@ ax6.plot(data2.iloc[:,5].index, data2.iloc[:,5], color=palette[5])
 ax6.set_title('gyroscope Z')
 
 # Add figure title and legend
-fig.suptitle('Subject2 Activity Gyroscope|Accelerometer', fontsize=14, fontweight='bold')
+fig.suptitle('Subject2 Gyroscope|Accelerometer', fontsize=14, fontweight='bold')
 plt.show()
 
 #=============================== Detect outliers ==================================
@@ -145,3 +148,4 @@ outliers = sounds2.iloc[outlier_indices]
 
 # filter out the outliers from the dataset 
 sounds3 = sounds2[labels != -1]
+
