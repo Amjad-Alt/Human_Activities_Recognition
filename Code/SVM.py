@@ -18,11 +18,41 @@ prediction = svc_model.predict(X_test)
 # print(svc_model.score(y_test, prediction))
 scores = cross_val_score(svc_model, y_test, prediction, cv=3,scoring='accuracy')
 print("Score of Cross Validation:" + str(scores.mean()))
-accuracy_score(y_test, prediction)
-precision_score(y_test, prediction, average='macro')
-recall_score(y_test, prediction, average='macro')
-f1_score(y_test, prediction, average='macro')
-f1_score(y_test, prediction, average='weighted')
+print(accuracy_score(y_test, prediction))
+print(precision_score(y_test, prediction, average='macro'))
+print(recall_score(y_test, prediction, average='macro'))
+print(f1_score(y_test, prediction, average='macro'))
+print(f1_score(y_test, prediction, average='weighted'))
+
+#%%
+# Linear-SVM Model
+poly_svc=SVC(kernel='poly', C=10) 
+poly_svc.fit(X_train,y_train)
+# make predictions on test set
+y_pred_poly=poly_svc.predict(X_test)
+# compute and print accuracy score
+print('Model accuracy score with polynomial kernel and C=10 : {0:0.4f}'. format(accuracy_score(y_test, y_pred_poly)))
+print(f"Precision score: {precision_score(y_test, y_pred_poly, average='macro')}")
+print(f"Recall rate: {recall_score(y_test, y_pred_poly, average='macro')}")
+print(f"f1-score: {f1_score(y_test, y_pred_poly, average='macro')}")
+
+#%%
+# Sigmoid SVM model
+sigmoid_svc=SVC(kernel='sigmoid', C=1.0) 
+# fit classifier to training set
+sigmoid_svc.fit(X_train,y_train)
+# make predictions on test set
+y_pred_sig = sigmoid_svc.predict(X_test)
+# compute and print accuracy score
+print('Model accuracy score with sigmoid kernel and C=1.0 : {0:0.4f}'. format(accuracy_score(y_test, y_pred_sig)))
+print(f"Precision score: {precision_score(y_test, y_pred_sig, average='macro')}")
+print(f"Recall rate: {recall_score(y_test, y_pred_sig, average='macro')}")
+print(f"f1-score: {f1_score(y_test, y_pred_sig, average='macro')}")
+
+#%%
+# Checking over-fitting or under-fitting
+print('Training set score: {:.4f}'.format(linear_svc.score(X_train, y_train)))
+print('Test set score: {:.4f}'.format(linear_svc.score(X_test, y_test)))
 
 #%%
 # SVC grid search
