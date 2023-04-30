@@ -51,8 +51,14 @@ print(f"f1-score: {f1_score(y_test, y_pred_sig, average='macro')}")
 
 #%%
 # Checking over-fitting or under-fitting
-print('Training set score: {:.4f}'.format(linear_svc.score(X_train, y_train)))
-print('Test set score: {:.4f}'.format(linear_svc.score(X_test, y_test)))
+print('Training set score: {:.4f}'.format(svc_model.score(X_train, y_train)))
+print('Test set score: {:.4f}'.format(svc_model.score(X_test, y_test)))
+
+print('Training set score: {:.4f}'.format(poly_svc.score(X_train, y_train)))
+print('Test set score: {:.4f}'.format(poly_svc.score(X_test, y_test)))
+
+print('Training set score: {:.4f}'.format(sigmoid_svc.score(X_train, y_train)))
+print('Test set score: {:.4f}'.format(sigmoid_svc.score(X_test, y_test)))
 
 #%%
 # SVC grid search
