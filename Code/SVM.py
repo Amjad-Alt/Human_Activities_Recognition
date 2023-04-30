@@ -15,10 +15,12 @@ svc_model.fit(X_train, y_train)
  
 prediction = svc_model.predict(X_test)
 # check the accuracy on the training set
-print(svc_model.score(y_test, prediction))
+# print(svc_model.score(y_test, prediction))
 scores = cross_val_score(svc_model, y_test, prediction, cv=3,scoring='accuracy')
 print("Score of Cross Validation:" + str(scores.mean()))
 accuracy_score(y_test, prediction)
+precision_score(y_test, prediction, average='macro')
+recall_score(y_test, prediction, average='macro')
 f1_score(y_test, prediction, average='macro')
 f1_score(y_test, prediction, average='weighted')
 

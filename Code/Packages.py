@@ -25,6 +25,8 @@ from sklearn.cluster import DBSCAN
 # modeling 
 from sklearn.neural_network import MLPClassifier # model chosen
 from sklearn.model_selection import cross_val_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import precision_score
 from skopt import BayesSearchCV
 from skopt.space import Real, Integer, Categorical
 from sklearn_lvq import GlvqModel
