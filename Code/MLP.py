@@ -1,29 +1,5 @@
 
-#=========================== LOAD DATA =========================
-
-# set seed
-np.random.seed(42)
-
-# load dataset and saperate X,y
-X = sounds2.drop('Activity', axis=1)
-y = sounds2['Activity']
-
-# X,y shapes
-print(f'X schema {X.shape}')
-print(f'y schema {y.shape}')
-
-# X,y head
-print(X.head(3))
-print(y.head(3))
-
-# check features types
-print(f'{X.dtypes}')
-print(f'{y.dtypes}')
-
 #============================== Modeling ==========================
-
-# split dataset into training, testing sets 60-40
-#X_train, X_valtest, y_train, y_valtest = train_test_split(X, y, test_size=0.4, random_state=42)
 
 # Define the hyperparameters search space
 hyperparameters_space = {
@@ -57,13 +33,16 @@ search.fit(X_train, y_train)
 
 # Print the best hyperparameters found
 print(search.best_params_)
+# without PCA
 # OrderedDict([('activation', 'tanh'), ('alpha', 1.505737910157384e-05), ('hidden_layer_sizes', 72), ('learning_rate_init', 0.007656584299243426), ('solver', 'adam')])
+# with 10 PCA
 # OrderedDict([('activation', 'relu'), ('alpha', 2.132241999494801e-05), ('hidden_layer_sizes', 10), ('learning_rate_init', 0.0006871268023692144), ('solver', 'lbfgs')])
-### OrderedDict([('activation', 'relu'), ('alpha', 0.001), ('hidden_layer_sizes', 19), ('learning_rate_init', 0.1), ('solver', 'lbfgs')])
+# with 20 PCA
+# OrderedDict([('activation', 'tanh'), ('alpha', 4.950547942793197e-05), ('hidden_layer_sizes', 144), ('learning_rate_init', 0.00033522328070073447), ('solver', 'adam')])
 print(search.best_score_)
 # 0.9781553398058251 without PCA
-### 0.9992716236051425 with Anne PCA
-# 0.8519185566605086 with my PCA
+# 0.8519185566605086 with 10 PCA
+# 0.9311797413361157 with 20 PCA
 
 # ============================== Evaluation =========================
 # accurcy
@@ -72,10 +51,11 @@ accuracy = cross_val_score(best_model, X_test, y_test, cv=5).mean()
 print("Accuracy:", accuracy)
 # with all features
 # Accuracy: 0.9781553398058251
-# My feature reduction
+# 10 feature reduction
 # Accuracy: 0.8274271844660195
-# Anne feature reduction
-# Accuracy: 0.9737864077669902
+# 20 feature reduction
+# Accuracy: 0.9019417475728154
+
 
 # confusion matrix
 # predict classes of the test set

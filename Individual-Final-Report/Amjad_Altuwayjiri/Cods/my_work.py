@@ -466,19 +466,6 @@ for i, x in enumerate(X_train):
          markerfacecolor='None', markeredgecolor=colors[y_train.values.ravel()[i]-1], markersize=10, markeredgewidth=2)
 plt.show()
 
-# train GLVQ model on entire dataset using best hyperparameters
-best_model.fit(X_scaled, label)
-
-# extract weights of the model and reshape into 2D grid
-weights = best_model.w_
-n_rows, n_cols, n_features = X_train.shape[0], X_train.shape[1], X_train.shape[1]
-weights = weights.reshape((n_rows, n_cols, n_features))
-
-# create SOM plot using matshow function
-plt.matshow(weights[:,:,0], cmap='gray_r')
-plt.title('SOM Plot for Weights')
-plt.show()
-
 
 # Train the model
 model = OneClassSVM(nu=0.1)

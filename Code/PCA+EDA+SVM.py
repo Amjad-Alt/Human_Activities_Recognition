@@ -8,27 +8,26 @@ from sklearn.model_selection import learning_curve
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.decomposition import PCA
-import plotly.express as px
+#import plotly.express as px
 import seaborn as sns 
 from sklearn.preprocessing import LabelEncoder
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from sklearn.svm import SVC
 
 #%%
-sounds = pd.read_csv("sounds.csv")
-plt.matshow(sounds.corr())
+#sounds = pd.read_csv("data/sounds.csv")
+plt.matshow(sounds3.corr())
 
 #%%
-X = sounds.iloc[:,:-1]
-y = sounds.iloc[:,-1:]
+X = sounds3.iloc[:,:-1]
+y = sounds3.iloc[:,-1:]
 #%%
 sc = StandardScaler()
 X_scaled = sc.fit_transform(X)
 # 'RdBu_r', 'BrBG_r', & PuOr_r are other good diverging colormaps
 
 #%%
-pca = PCA(n_components = 10)
-pca.fit(X_scaled)
+pca = PCA(n_components = 20)
 X_pca = pca.fit_transform(X_scaled)
 
 plt.bar(range(1,len(pca.explained_variance_ )+1),pca.explained_variance_ )
@@ -41,7 +40,7 @@ plt.plot(range(1,len(pca.explained_variance_ )+1),
 plt.legend(loc='upper left')
 
 #%%
-df_new = pd.DataFrame(X_pca, columns=['PC1', 'PC2', 'PC3', 'PC4', 'PC5', 'PC6', 'PC7', 'PC8', 'PC9', 'PC10'])
+df_new = pd.DataFrame(X_pca)
 df_new['label'] = y
 df_new.head()
 
@@ -68,7 +67,7 @@ df_new
 X = df_new.iloc[:,:-1]
 y = df_new.iloc[:,-1:]
 #%%
-X_train, X_test, y_train, y_test = train_test_split(df_new, y, test_size = 0.2, random_state = 0)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
 
 #%%
 # PCA - Scatter Plot

@@ -30,13 +30,12 @@ random_search.fit(X_train, y_train.values.ravel())
 # print best parameters and corresponding score
 print(f'Best score: {random_search.best_score_}')
 # Best score: 0.9721638300381275
-# My PCA Best score: 0.8297458171193479
-# Anne PCA Best score: 0.9683211163574844
+# 10 PCA Best score: 0.8297458171193479
+# Best score: 0.9145518329884874
 print(f'Best parameters:{random_search.best_params_}')
 # Best parameters:{'random_state': 8, 'prototypes_per_class': 7, 'beta': 75}
-# My PCA Best parameters:{'random_state': 8, 'prototypes_per_class': 7, 'beta': 75}
-# Anne PCA Best parameters:{'random_state': 8, 'prototypes_per_class': 1, 'beta': 75}
-
+# 10 PCA Best parameters:{'random_state': 8, 'prototypes_per_class': 7, 'beta': 75}
+# 20 PCA Best parameters:{'random_state': 3, 'prototypes_per_class': 3, 'beta': 75}
 #============================= Evaluation ===========================
 
 # accurcy
@@ -44,8 +43,8 @@ best_model = random_search.best_estimator_
 accuracy = cross_val_score(best_model, X_test, y_test, cv=5).mean()
 print("Accuracy:", accuracy)
 # Accuracy: 0.9769417475728155
-# with feature reduction Accuracy: 0.8208737864077669
-# Anne PCA Accuracy: 0.9655339805825243
+# 10 PCA Accuracy: 0.8208737864077669
+# 20 PCA Accuracy: 0.8927184466019418
 
 # confusion matrix
 # predict the classes of the test set
@@ -94,10 +93,10 @@ plt.show()
 prototypes = best_model.w_
 
 # Use the SOM algorithm to create a self-organizing map using the prototypes as input
-som_width = 10
-som_height = 10
-som = MiniSom(som_width, som_height, X_train, sigma=1.0, learning_rate=0.5)
-som.pca_weights_init(X_train)
+som_width = int(20)
+som_height = int(20)
+som = MiniSom(x=10, y=10, input_len=20, sigma=1.0, learning_rate=0.5)
+som.pca_weights_init(X_train.values)
 som.train_batch(prototypes, 10000, verbose=True)
 
 # Plot the SOM to visualize the clustering regions
@@ -112,18 +111,6 @@ for i, x in enumerate(X_train):
          markerfacecolor='None', markeredgecolor=colors[y_train.values.ravel()[i]-1], markersize=10, markeredgewidth=2)
 plt.show()
 
-# train GLVQ model on entire dataset using best hyperparameters
-best_model.fit(X_scaled, label)
-
-# extract weights of the model and reshape into 2D grid
-weights = best_model.w_
-n_rows, n_cols, n_features = X_train.shape[0], X_train.shape[1], X_train.shape[1]
-weights = weights.reshape((n_rows, n_cols, n_features))
-
-# create SOM plot using matshow function
-plt.matshow(weights[:,:,0], cmap='gray_r')
-plt.title('SOM Plot for Weights')
-plt.show()
 
 
 
