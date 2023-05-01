@@ -150,8 +150,8 @@ outliers = sounds2.iloc[outlier_indices]
 sounds3 = sounds2[labels != -1]
 
 # PCA
-X = sounds.iloc[:,:-1]
-y = sounds.iloc[:,-1:]
+X = sounds3.iloc[:,:-1]
+y = sounds3.iloc[:,-1:]
 #%%
 sc = StandardScaler()
 X_scaled = sc.fit_transform(X)
@@ -203,7 +203,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 
 #%%
 # PCA - Scatter Plot
-fig = px.scatter(X_pca, x=0, y=1, color=sounds['Activity'])
+fig = px.scatter(X_pca, x=0, y=1, color=sounds3['Activity'])
 fig.show()
 
 #%%
@@ -215,8 +215,8 @@ fig.show()
 #                  xticklabels=list(X_pca.columns),
 #                  cbar_kws={"orientation": "horizontal"})
 # ax.set_aspect("equal")
-corr = plt.matshow(df_new.corr())
-plt.colorbar(corr)
+# corr = plt.matshow(df_new.corr())
+# plt.colorbar(corr)
 # sns.heatmap(df_new)
 #%%
 # Making Correlation Graph among PC1~20 and Activity using plt.imshow()

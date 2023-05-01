@@ -8,10 +8,6 @@ ax.set_xlabel('PC1')
 ax.set_ylabel('PC2')
 ax.set_zlabel('Activity')
 
-#%%
-
-
-
 # %%
 # SVM
 svc_model = SVC(C=.1, kernel='linear', gamma=1)
@@ -95,13 +91,13 @@ print('\nTrue Negatives(TN) = ', cm[1,1])
 print('\nFalse Positives(FP) = ', cm[0,1])
 print('\nFalse Negatives(FN) = ', cm[1,0])
 
-cm_matrix = pd.DataFrame(data=cm, columns=['Actual Positive:1', 'Actual Negative:0'], 
-                                 index=['Predict Positive:1', 'Predict Negative:0'])
+# cm_matrix = pd.DataFrame(data=cm, columns=['Actual Positive:1', 'Actual Negative:0'], 
+#                                  index=['Predict Positive:1', 'Predict Negative:0'])
 
 sns.heatmap(cm_matrix, annot=True, fmt='d', cmap='YlGnBu')
 
 #%%
-# SVC grid search
+# hyperparamater optimization - SVC grid search
 rf_params = {
     'C': [1,10, 100],
     "kernel":['linear','poly','rbf','sigmoid']
@@ -113,17 +109,91 @@ print(grid.best_params_)
 print("Accuracy:"+ str(grid.best_score_))
 
 #%%
-# rf_params = {
-#     'C': stats.uniform(0,50),
-#     "kernel":['linear','poly','rbf','sigmoid']
-# }
-# n_iter_search=20
-# clf = SVC(gamma='scale')
-# Random = RandomizedSearchCV(clf, param_distributions=rf_params,n_iter=n_iter_search,cv=3,scoring='accuracy')
-# Random.fit(X_train, y_train)
-# print(Random.best_params_)
-# print("Accuracy:"+ str(Random.best_score_))
+# Bayesian Optimization with Gaussian Process
+from skopt import Optimizer
+from skopt import BayesSearchCV 
+from skopt.space import Real, Categorical, Integer
+rf_params = {
+    'C': Real(0.01,50),
+    "kernel":['linear','poly','rbf','sigmoid']
+}
+clf = SVC(gamma='scale')
+Bayes = BayesSearchCV(clf, rf_params,cv=3,n_iter=20, n_jobs=-1,scoring='accuracy')
+Bayes.fit(X_train, y_train)
+print(Bayes.best_params_)
+bclf = Bayes.best_estimator_
+print("Accuracy:"+ str(Bayes.best_score_))
+
+#%%
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+def create_model(): 
+    model = Sequential([
+        Dense(64, activation='relu', input_shape=(20,)),
+        # Dense(128, activation='relu'),
+        # Dense(128, activation='relu'),
+        # Dense(128, activation='relu'),
+        # Dense(64, activation='relu'),
+        # Dense(64, activation='relu'),
+        Dense(64, activation='relu'),
+        # Dense(1, activation='sigmoid')
+        Dense(6, activation='softmax')
+    ])
+    return model
+model = create_model()
+model.compile(
+    optimizer='adam', 
+    loss='categorical_crossentropy', 
+    metrics=['accuracy']
+)
+
+history = model.fit(
+    X_train, 
+    y_train, 
+    epochs=100, 
+    validation_split=0.25, 
+    batch_size=20, 
+    verbose=2
+)
+
+score = model.evaluate(X_test, y_test, verbose=0)
+print('Test loss:', score[0])
+print('Test accuracy:', score[1])
+
+def plot_metric(history, metric):
+    train_metrics = history.history[metric]
+    val_metrics = history.history['val_'+metric]
+    epochs = range(1, len(train_metrics) + 1)
+    plt.plot(epochs, train_metrics)
+    plt.plot(epochs, val_metrics)
+    plt.title('Training and validation '+ metric)
+    plt.xlabel("Epochs")
+    plt.ylabel(metric)
+    plt.legend(["train_"+metric, 'val_'+metric])
+    plt.show()
+plot_metric(history, 'loss')
+
+from tensorflow.keras.callbacks import EarlyStopping
+early_stopping = EarlyStopping()
+custom_early_stopping = EarlyStopping(
+    monitor='val_accuracy', 
+    patience=8, 
+    min_delta=0.001, 
+    mode='max'
+)
+history = model.fit(
+    X_train, 
+    y_train, 
+    epochs=200, 
+    validation_split=0.25, 
+    batch_size=40, 
+    verbose=2,
+    callbacks=[custom_early_stopping]
+)
 
 
 # %%
 # Voting Classifier
+# k-fold 
+# early stopping -- gradient descent 
+# using soft margin instead of hard one
