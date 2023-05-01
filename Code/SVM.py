@@ -1,12 +1,16 @@
 # %%
 # SVM visualization
-df=df_new.iloc[:10298,[0,1,10]]
+df=df_new.iloc[:10298,[0,1,20]]
 
 ax = plt.axes(projection='3d')
 ax.scatter(df['PC1'], df['PC2'], df['Activity'])
 ax.set_xlabel('PC1')
 ax.set_ylabel('PC2')
 ax.set_zlabel('Activity')
+
+#%%
+
+
 
 # %%
 # SVM
@@ -23,6 +27,25 @@ print(precision_score(y_test, prediction, average='macro'))
 print(recall_score(y_test, prediction, average='macro'))
 print(f1_score(y_test, prediction, average='macro'))
 print(f1_score(y_test, prediction, average='weighted'))
+cf_matrix = confusion_matrix(y_test, prediction)
+sns.heatmap(cf_matrix, annot=True)
+
+support_vector_indices = svc_model.support_
+print(support_vector_indices)
+
+support_vectors_per_class = svc_model.n_support_
+print(support_vectors_per_class)
+
+# Get support vectors themselves
+support_vectors = svc_model.support_vectors_
+
+# Visualize support vectors
+plt.scatter(X_pca[:,0], X_pca[:,1])
+plt.scatter(support_vectors[:,0], support_vectors[:,1], color='red')
+plt.title('Linearly separable data with support vectors')
+plt.xlabel('X1')
+plt.ylabel('X2')
+plt.show()
 
 #%%
 # Linear-SVM Model
@@ -35,6 +58,8 @@ print('Model accuracy score with polynomial kernel and C=10 : {0:0.4f}'. format(
 print(f"Precision score: {precision_score(y_test, y_pred_poly, average='macro')}")
 print(f"Recall rate: {recall_score(y_test, y_pred_poly, average='macro')}")
 print(f"f1-score: {f1_score(y_test, y_pred_poly, average='macro')}")
+cf_matrix = confusion_matrix(y_test, prediction)
+sns.heatmap(cf_matrix, annot=True)
 
 #%%
 # Sigmoid SVM model
@@ -59,6 +84,21 @@ print('Test set score: {:.4f}'.format(poly_svc.score(X_test, y_test)))
 
 print('Training set score: {:.4f}'.format(sigmoid_svc.score(X_train, y_train)))
 print('Test set score: {:.4f}'.format(sigmoid_svc.score(X_test, y_test)))
+
+#%%
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_test, prediction)
+
+print('Confusion matrix\n\n', cm)
+print('\nTrue Positives(TP) = ', cm[0,0])
+print('\nTrue Negatives(TN) = ', cm[1,1])
+print('\nFalse Positives(FP) = ', cm[0,1])
+print('\nFalse Negatives(FN) = ', cm[1,0])
+
+cm_matrix = pd.DataFrame(data=cm, columns=['Actual Positive:1', 'Actual Negative:0'], 
+                                 index=['Predict Positive:1', 'Predict Negative:0'])
+
+sns.heatmap(cm_matrix, annot=True, fmt='d', cmap='YlGnBu')
 
 #%%
 # SVC grid search

@@ -172,7 +172,7 @@ plt.plot(range(1,len(pca.explained_variance_ )+1),
 plt.legend(loc='upper left')
 
 #%%
-df_new = pd.DataFrame(X_pca)
+df_new = pd.DataFrame(X_pca, columns=['PC1', 'PC2', 'PC3', 'PC4', 'PC5', 'PC6', 'PC7', 'PC8', 'PC9', 'PC10', 'PC11', 'PC12', 'PC13', 'PC14', 'PC15', 'PC16', 'PC17', 'PC18', 'PC19', 'PC20'])
 df_new['label'] = y
 df_new.head()
 
@@ -219,12 +219,12 @@ corr = plt.matshow(df_new.corr())
 plt.colorbar(corr)
 # sns.heatmap(df_new)
 #%%
-# Making Correlation Graph among PC1~10 and Activity using plt.imshow()
+# Making Correlation Graph among PC1~20 and Activity using plt.imshow()
 ax = plt.subplot()
 im = ax.imshow(df_new.corr())
-plt.xlabel("PC1~10 and Activity")
-plt.ylabel("PC1~10 and Activity")
-plt.title("Correlation among PC1~10 and Activity")
+plt.xlabel("PC1~20 and Activity")
+plt.ylabel("PC1~20 and Activity")
+plt.title("Correlation among PC1~20 and Activity")
 # create an Axes on the right side of ax. The width of cax will be 5%
 # of ax and the padding between cax and ax will be fixed at 0.05 inch.
 divider = make_axes_locatable(ax)
@@ -235,6 +235,11 @@ plt.show()
 #%%
 # First two of components 
 plt.scatter(X_pca[:, 0], X_pca[:, 1])
+plt.title('The first two component data')
+plt.xlabel('C1')
+plt.ylabel('C2')
+plt.show()
+
 # %%
 # The first 10 components' explained_variance_ratio
 pca.explained_variance_ratio_ *100
