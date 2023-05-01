@@ -1,11 +1,11 @@
 ## To run codes properly, please follow the fileing numbers below:
 
-1. `Packages`: Make sure to install necessary packages. This file also includes codes for joining different datasets and this part should not be runned
+1. `Packages`: Make sure to install necessary packages. 
+2. `data_joining`: includes codes for joining different datasets and this file should not be runned
 2. `EDA`: Exploratory Data Analysis can be found in this file in addition to data preprocessing
 3. `MLP`: MLP algorithm with model evaluation
 4. `LVQ`: LVQ algorithm with model evaluation
 5. `SVM`: SVM algorithm with model evaluation
-6. `Novelty_detection`: One-class SVM algorithm with model evaluation
 
 ### Data:
 This file has:
