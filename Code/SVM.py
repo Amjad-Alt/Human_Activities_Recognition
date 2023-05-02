@@ -16,16 +16,17 @@ svc_model.fit(X_train, y_train)
 prediction = svc_model.predict(X_test)
 # check the accuracy on the training set
 # print(svc_model.score(y_test, prediction))
-scores = cross_val_score(svc_model, y_test, prediction, cv=3,scoring='accuracy')
-print("Score of Cross Validation:" + str(scores.mean()))
+
 print(accuracy_score(y_test, prediction))
 print(precision_score(y_test, prediction, average='macro'))
 print(recall_score(y_test, prediction, average='macro'))
 print(f1_score(y_test, prediction, average='macro'))
-print(f1_score(y_test, prediction, average='weighted'))
+scores = cross_val_score(svc_model, y_test, prediction, cv=3,scoring='accuracy')
+print("Score of Cross Validation:" + str(scores.mean()))
 cf_matrix = confusion_matrix(y_test, prediction)
 sns.heatmap(cf_matrix, annot=True)
 
+#%%
 support_vector_indices = svc_model.support_
 print(support_vector_indices)
 
@@ -94,7 +95,7 @@ print('\nFalse Negatives(FN) = ', cm[1,0])
 # cm_matrix = pd.DataFrame(data=cm, columns=['Actual Positive:1', 'Actual Negative:0'], 
 #                                  index=['Predict Positive:1', 'Predict Negative:0'])
 
-sns.heatmap(cm_matrix, annot=True, fmt='d', cmap='YlGnBu')
+sns.heatmap(cm, annot=True, fmt='d', cmap='YlGnBu')
 
 #%%
 # hyperparamater optimization - SVC grid search
@@ -102,8 +103,8 @@ rf_params = {
     'C': [1,10, 100],
     "kernel":['linear','poly','rbf','sigmoid']
 }
-svc2 = SVC(gamma='scale')
-grid = GridSearchCV(svc2, rf_params, cv=3, scoring='accuracy')
+svc_grid = SVC(gamma='scale')
+grid = GridSearchCV(svc_grid, rf_params, cv=3, scoring='accuracy')
 grid.fit(X_train, y_train)
 print(grid.best_params_)
 print("Accuracy:"+ str(grid.best_score_))
@@ -130,16 +131,21 @@ from tensorflow.keras.layers import Dense
 def create_model(): 
     model = Sequential([
         Dense(64, activation='relu', input_shape=(20,)),
-        # Dense(128, activation='relu'),
-        # Dense(128, activation='relu'),
-        # Dense(128, activation='relu'),
-        # Dense(64, activation='relu'),
-        # Dense(64, activation='relu'),
         Dense(64, activation='relu'),
-        # Dense(1, activation='sigmoid')
-        Dense(6, activation='softmax')
+        Dense(1, activation='softmax')
     ])
     return model
+
+from tensorflow.keras.callbacks import EarlyStopping
+
+early_stopping = EarlyStopping()
+custom_early_stopping = EarlyStopping(
+    monitor='val_accuracy', 
+    patience=42, 
+    min_delta=0.001, 
+    mode='max'
+)
+
 model = create_model()
 model.compile(
     optimizer='adam', 
@@ -153,47 +159,18 @@ history = model.fit(
     epochs=100, 
     validation_split=0.25, 
     batch_size=20, 
-    verbose=2
+    verbose=2,
+    callbacks=[custom_early_stopping]
 )
 
 score = model.evaluate(X_test, y_test, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 
-def plot_metric(history, metric):
-    train_metrics = history.history[metric]
-    val_metrics = history.history['val_'+metric]
-    epochs = range(1, len(train_metrics) + 1)
-    plt.plot(epochs, train_metrics)
-    plt.plot(epochs, val_metrics)
-    plt.title('Training and validation '+ metric)
-    plt.xlabel("Epochs")
-    plt.ylabel(metric)
-    plt.legend(["train_"+metric, 'val_'+metric])
-    plt.show()
-plot_metric(history, 'loss')
 
-from tensorflow.keras.callbacks import EarlyStopping
-early_stopping = EarlyStopping()
-custom_early_stopping = EarlyStopping(
-    monitor='val_accuracy', 
-    patience=8, 
-    min_delta=0.001, 
-    mode='max'
-)
-history = model.fit(
-    X_train, 
-    y_train, 
-    epochs=200, 
-    validation_split=0.25, 
-    batch_size=40, 
-    verbose=2,
-    callbacks=[custom_early_stopping]
-)
 
 
 # %%
 # Voting Classifier
-# k-fold 
-# early stopping -- gradient descent 
+
 # using soft margin instead of hard one
