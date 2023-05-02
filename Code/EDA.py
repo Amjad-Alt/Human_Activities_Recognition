@@ -150,8 +150,8 @@ outliers = sounds2.iloc[outlier_indices]
 sounds3 = sounds2[labels != -1]
 
 # PCA
-X = sounds3.iloc[:,:-1]
-y = sounds3.iloc[:,-1:]
+X = sounds.iloc[:,:-1]
+y = sounds.iloc[:,-1:]
 #%%
 sc = StandardScaler()
 X_scaled = sc.fit_transform(X)
@@ -203,7 +203,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 
 #%%
 # PCA - Scatter Plot
-fig = px.scatter(X_pca, x=0, y=1, color=sounds3['Activity'])
+fig = px.scatter(X_pca, x=0, y=1, color=sounds['Activity'])
 fig.show()
 
 #%%
