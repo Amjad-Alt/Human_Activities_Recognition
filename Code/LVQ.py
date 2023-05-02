@@ -4,7 +4,6 @@
 
 # define parameter distributions for random search
 param_dist = {'prototypes_per_class': range(1, 11),
-              'random_state': range(10),
               'beta': [0, 25, 5, 75, 1]
               }
 #beta: controls the learning rate for the prototypes.
@@ -33,9 +32,9 @@ print(f'Best score: {random_search.best_score_}')
 # 10 PCA Best score: 0.8297458171193479
 # Best score: 0.9145518329884874
 print(f'Best parameters:{random_search.best_params_}')
-# Best parameters:{'random_state': 8, 'prototypes_per_class': 7, 'beta': 75}
-# 10 PCA Best parameters:{'random_state': 8, 'prototypes_per_class': 7, 'beta': 75}
-# 20 PCA Best parameters:{'random_state': 3, 'prototypes_per_class': 3, 'beta': 75}
+# Best parameters:{'prototypes_per_class': 7, 'beta': 75}
+# 10 PCA Best parameters:{'prototypes_per_class': 7, 'beta': 75}
+# 20 PCA Best parameters:{'prototypes_per_class': 3, 'beta': 75}
 #============================= Evaluation ===========================
 
 # accurcy
