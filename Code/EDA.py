@@ -149,9 +149,9 @@ outliers = sounds2.iloc[outlier_indices]
 # filter out the outliers from the dataset 
 sounds3 = sounds2[labels != -1]
 
-# PCA
-X = sounds.iloc[:,:-1]
-y = sounds.iloc[:,-1:]
+################################# PCA ##################################
+X = sounds3.iloc[:,:-1]
+y = sounds3.iloc[:,-1:]
 #%%
 sc = StandardScaler()
 X_scaled = sc.fit_transform(X)
@@ -178,26 +178,26 @@ df_new.head()
 
 #%%
 # Creating a instance of label Encoder.
-le = LabelEncoder()
+# le = LabelEncoder()
 # Using .fit_transform function to fit label
 # encoder and return encoded label
-label = le.fit_transform(df_new['label'])
+# label = le.fit_transform(df_new['label'])
 # printing label
-label
+# label
 
 #%%
 # removing the column 'Purchased' from df
 # as it is of no use now.
-df_new.drop("label", axis=1, inplace=True)
+# df_new.drop("label", axis=1, inplace=True)
 # Appending the array to our dataFrame
 # with column name 'Purchased'
-df_new["Activity"] = label
+# df_new["Activity"] = label
 # printing Dataframe
 df_new
 
 #%%
 X = df_new.iloc[:,:-1]
-y = df_new.iloc[:,-1:]
+#y = df_new.iloc[:,-1:]
 #%%
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
 
