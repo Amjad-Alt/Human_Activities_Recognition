@@ -24,7 +24,7 @@ print(f1_score(y_test, prediction, average='macro'))
 scores = cross_val_score(svc_model, y_test, prediction, cv=3,scoring='accuracy')
 print("Score of Cross Validation:" + str(scores.mean()))
 cf_matrix = confusion_matrix(y_test, prediction)
-sns.heatmap(cf_matrix, annot=True)
+# sns.heatmap(cf_matrix, annot=True)
 
 #%%
 support_vector_indices = svc_model.support_
@@ -37,12 +37,12 @@ print(support_vectors_per_class)
 support_vectors = svc_model.support_vectors_
 
 # Visualize support vectors
-plt.scatter(X_pca[:,0], X_pca[:,1])
-plt.scatter(support_vectors[:,0], support_vectors[:,1], color='red')
-plt.title('Linearly separable data with support vectors')
-plt.xlabel('X1')
-plt.ylabel('X2')
-plt.show()
+# plt.scatter(X_pca[:,0], X_pca[:,1])
+# plt.scatter(support_vectors[:,0], support_vectors[:,1], color='red')
+# plt.title('Linearly separable data with support vectors')
+# plt.xlabel('X1')
+# plt.ylabel('X2')
+# plt.show()
 
 #%%
 # Linear-SVM Model
@@ -56,7 +56,7 @@ print(f"Precision score: {precision_score(y_test, y_pred_poly, average='macro')}
 print(f"Recall rate: {recall_score(y_test, y_pred_poly, average='macro')}")
 print(f"f1-score: {f1_score(y_test, y_pred_poly, average='macro')}")
 cf_matrix = confusion_matrix(y_test, prediction)
-sns.heatmap(cf_matrix, annot=True)
+# sns.heatmap(cf_matrix, annot=True)
 
 #%%
 # Sigmoid SVM model
@@ -95,7 +95,7 @@ print('\nFalse Negatives(FN) = ', cm[1,0])
 # cm_matrix = pd.DataFrame(data=cm, columns=['Actual Positive:1', 'Actual Negative:0'], 
 #                                  index=['Predict Positive:1', 'Predict Negative:0'])
 
-sns.heatmap(cm, annot=True, fmt='d', cmap='YlGnBu')
+# sns.heatmap(cm, annot=True, fmt='d', cmap='YlGnBu')
 
 #%%
 # hyperparamater optimization - SVC grid search
